@@ -1,0 +1,79 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ServiceIcon from '../components/ServiceIcon.astro';
+import { getServices } from '../lib/sanity';
+import { fallbackServices, tierTextClass, tierBgClass } from '../lib/services';
+
+let cmsServices: Awaited<ReturnType<typeof getServices>> = [];
+try {
+  cmsServices = await getServices();
+} catch {
+  // Sanity not configured yet.
+}
+
+// Sanity-sourced services won't have our local `detail` field, so fall
+// back to rendering just the summary as the intro with no bullet list.
+const rawServices = cmsServices.length ? cmsServices : fallbackServices;
+const displayServices = rawServices.map((s: any) => ({
+  id: s.id ?? s.slug?.current ?? '',
+  title: s.title,
+  icon: s.icon ?? 'database',
+  color: s.color ?? 'signal',
+  detail: s.detail ?? { intro: s.summary, bullets: [], idealFor: '' },
+}));
+---
+
+<BaseLayout title="Services" description="Services offered by DeCorte Industries.">
+  <p class="eyebrow">services</p>
+  <h1 class="mt-3 font-display text-3xl font-semibold text-ink sm:text-4xl">What we do</h1>
+  <p class="mt-4 max-w-2xl text-smoke">
+    Four ways to work with us — from a single project to an ongoing,
+    fractional part of your team. Each is backed by decades of combined
+    experience building production cloud-native platforms.
+  </p>
+
+  <div class="mt-10 space-y-6">
+    {displayServices.map((service) => (
+      <div id={service.id} class="scroll-mt-24 rounded-md border border-ink/10 bg-white">
+        <div class="flex items-center gap-3 border-b border-ink/10 px-6 py-3 sm:px-8">
+          <span class={`h-2 w-2 rounded-full ${tierBgClass[service.color as keyof typeof tierBgClass] ?? 'bg-signal'}`} aria-hidden="true"></span>
+          <span class="font-mono text-xs uppercase tracking-widest text-smoke">service · {service.id || 'general'}</span>
+        </div>
+
+        <div class="p-6 sm:p-8">
+          <div class="flex items-start gap-4">
+            <div class={`hidden h-11 w-11 shrink-0 items-center justify-center rounded border border-ink/15 sm:flex ${tierTextClass[service.color as keyof typeof tierTextClass] ?? 'text-signal'}`}>
+              <ServiceIcon name={service.icon} />
+            </div>
+            <div>
+              <h2 class="font-display text-xl font-semibold text-ink">{service.title}</h2>
+              <p class="mt-2 max-w-2xl text-smoke">{service.detail.intro}</p>
+            </div>
+          </div>
+
+          {service.detail.bullets.length > 0 && (
+            <ul class="mt-5 divide-y divide-ink/5 sm:ml-16">
+              {service.detail.bullets.map((bullet: string) => (
+                <li class="flex items-start gap-3 py-2.5 text-sm text-smoke">
+                  <span class={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${tierBgClass[service.color as keyof typeof tierBgClass] ?? 'bg-signal'}`} aria-hidden="true"></span>
+                  {bullet}
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {service.detail.idealFor && (
+            <p class="mt-5 text-sm text-smoke sm:ml-16">
+              <span class="font-mono text-xs font-medium uppercase tracking-wide text-ink">Good fit for </span>
+              {service.detail.idealFor}
+            </p>
+          )}
+        </div>
+      </div>
+    ))}
+  </div>
+
+  <p class="mt-10 text-smoke">
+    Not sure which of these fits your situation? <a href="/contact" class="font-medium text-signal underline hover:text-signal-dark">Get in touch</a> and we'll help you figure it out.
+  </p>
+</BaseLayout>

@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getSiteSettings } from '../lib/sanity';
+
+let settings = null;
+try {
+  settings = await getSiteSettings();
+} catch {
+  // Sanity not configured yet.
+}
+
+const email = settings?.contactEmail ?? 'hello@decorteindustries.com';
+const phone = settings?.phone ?? '';
+---
+
+<BaseLayout title="Contact" description="Contact DeCorte Industries.">
+  <p class="eyebrow">contact</p>
+  <h1 class="mt-3 font-display text-3xl font-semibold text-ink sm:text-4xl">Tell us about your project</h1>
+  <p class="mt-4 max-w-2xl text-smoke">
+    We'll get back to you shortly to talk through what you need and whether a project engagement or a fractional retainer is the better fit.
+  </p>
+
+  <div class="mt-6 max-w-md space-y-2 rounded-md border border-ink/10 bg-white p-6 text-ink">
+    <p>Email: <a class="font-medium text-signal underline hover:text-signal-dark" href={`mailto:${email}`}>{email}</a></p>
+    {phone && <p>Phone: {phone}</p>}
+  </div>
+</BaseLayout>

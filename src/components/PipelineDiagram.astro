@@ -1,0 +1,66 @@
+---
+// The hero's signature element: a small medallion-architecture diagram
+// (raw → cleaned → business-ready data) with a pulse that travels the
+// line once on load. This is a literal, real data-engineering concept —
+// not a decorative flourish — and the same three tier colors recur as
+// the Services page's accent system.
+const stages = [
+  { label: 'RAW', tier: 'bronze', cx: 50 },
+  { label: 'CLEAN', tier: 'silver', cx: 220 },
+  { label: 'MODELED', tier: 'gold', cx: 390 },
+] as const;
+
+const tierColor: Record<string, string> = {
+  bronze: '#A9713F',
+  silver: '#8C96A6',
+  gold: '#B8901F',
+};
+---
+
+<svg
+  viewBox="0 0 440 170"
+  role="img"
+  aria-label="Diagram of the medallion data pipeline: raw data becomes cleaned data, which becomes modeled, business-ready data."
+  class="pipeline-diagram w-full max-w-md"
+>
+  <line x1="50" y1="70" x2="390" y2="70" stroke="#1B2430" stroke-opacity="0.15" stroke-width="2" stroke-dasharray="3 5" />
+
+  {stages.map((stage) => (
+    <g>
+      <circle cx={stage.cx} cy="70" r="9" fill={tierColor[stage.tier]} />
+      <circle cx={stage.cx} cy="70" r="9" fill="none" stroke={tierColor[stage.tier]} stroke-opacity="0.35" stroke-width="6" />
+      <text x={stage.cx} y="110" text-anchor="middle" class="fill-ink font-mono text-[11px] font-medium uppercase tracking-widest">
+        {stage.label}
+      </text>
+      <text x={stage.cx} y="128" text-anchor="middle" class="font-mono text-[10px] capitalize" fill={tierColor[stage.tier]}>
+        {stage.tier}
+      </text>
+    </g>
+  ))}
+
+  <circle class="pulse" cx="50" cy="70" r="5" fill="#3457A0" />
+</svg>
+
+<style>
+  .pulse {
+    animation: travel 2.4s cubic-bezier(0.45, 0, 0.2, 1) 0.5s 1 both;
+  }
+
+  @keyframes travel {
+    0% {
+      transform: translateX(0) scale(1);
+      opacity: 0;
+    }
+    8% {
+      opacity: 1;
+    }
+    78% {
+      transform: translateX(265px) scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(340px) scale(0.25);
+      opacity: 0;
+    }
+  }
+</style>

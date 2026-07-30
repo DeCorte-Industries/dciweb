@@ -1,0 +1,68 @@
+---
+interface Props {
+  companyName?: string;
+}
+const { companyName = 'DeCorte Industries' } = Astro.props;
+
+const navItems = [
+  { label: 'Home', href: '/' },
+  { label: 'About', href: '/about' },
+  { label: 'Services', href: '/services' },
+  { label: 'Contact', href: '/contact' },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<header class="border-b border-ink/10 bg-paper">
+  <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
+    <a href="/" class="flex items-center gap-2.5">
+      <img src="/logo-icon.png" alt="" class="h-8 w-auto" />
+      <span class="font-display text-lg font-semibold tracking-tight text-ink">{companyName}</span>
+    </a>
+    <nav class="hidden gap-8 sm:flex">
+      {navItems.map((item) => {
+        const isActive = currentPath === item.href;
+        return (
+          <a
+            href={item.href}
+            aria-current={isActive ? 'page' : undefined}
+            class:list={[
+              'font-mono text-xs font-medium uppercase tracking-widest text-smoke transition hover:text-ink',
+              { 'text-ink': isActive },
+            ]}
+          >
+            {item.label}
+          </a>
+        );
+      })}
+    </nav>
+    <button
+      id="menu-toggle"
+      class="sm:hidden"
+      aria-label="Toggle navigation menu"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+    >
+      <span class="block h-0.5 w-6 bg-ink mb-1"></span>
+      <span class="block h-0.5 w-6 bg-ink mb-1"></span>
+      <span class="block h-0.5 w-6 bg-ink"></span>
+    </button>
+  </div>
+  <nav id="mobile-menu" class="hidden flex-col gap-1 border-t border-ink/10 px-4 py-3 sm:hidden">
+    {navItems.map((item) => (
+      <a href={item.href} class="py-1.5 font-mono text-xs font-medium uppercase tracking-widest text-smoke">{item.label}</a>
+    ))}
+  </nav>
+</header>
+
+<script>
+  const toggle = document.getElementById('menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+  toggle?.addEventListener('click', () => {
+    const expanded = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!expanded));
+    menu?.classList.toggle('hidden');
+    menu?.classList.toggle('flex');
+  });
+</script>

@@ -1,0 +1,23 @@
+---
+interface Props {
+  companyName?: string;
+  contactEmail?: string;
+}
+const { companyName = 'DeCorte Industries', contactEmail = 'hello@decorteindustries.com' } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-20 bg-ink text-paper/70">
+  <div class="mx-auto max-w-6xl px-4 py-10">
+    <div class="flex flex-col items-center justify-between gap-4 sm:flex-row">
+      <div class="flex items-center gap-2">
+        <img src="/logo-icon.png" alt="" class="h-5 w-auto opacity-90 [filter:brightness(0)_invert(1)]" />
+        <p class="text-sm">&copy; {year} {companyName}. All rights reserved.</p>
+      </div>
+      <a href={`mailto:${contactEmail}`} class="text-sm hover:text-paper">{contactEmail}</a>
+    </div>
+    <p class="mt-6 border-t border-paper/10 pt-6 font-mono text-xs text-paper/40">
+      -- built with Astro, Tailwind, and Sanity
+    </p>
+  </div>
+</footer>

@@ -1,0 +1,79 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ServiceIcon from '../components/ServiceIcon.astro';
+import PipelineDiagram from '../components/PipelineDiagram.astro';
+import { getSiteSettings, getServices } from '../lib/sanity';
+import { fallbackServices, tierTextClass } from '../lib/services';
+
+let settings = null;
+let cmsServices: Awaited<ReturnType<typeof getServices>> = [];
+try {
+  settings = await getSiteSettings();
+  cmsServices = await getServices();
+} catch {
+  // Sanity project not configured yet — fall back to placeholder content.
+}
+
+const tagline =
+  settings?.tagline ??
+  "Cloud data platforms and Python engineering for teams that can't afford to get their data infrastructure wrong.";
+
+// Sanity-sourced services and our local fallback data are shaped
+// differently (the CMS type has no icon/color/id), so normalize both into
+// one renderable shape here rather than fighting the type checker.
+const rawServices = cmsServices.length ? cmsServices : fallbackServices;
+const displayServices = rawServices.map((s: any) => ({
+  title: s.title,
+  summary: s.summary,
+  icon: s.icon ?? 'database',
+  color: s.color ?? 'signal',
+  anchor: s.id ?? s.slug?.current ?? '',
+}));
+---
+
+<BaseLayout title="Home" description="DeCorte Industries — cloud data platforms and Python engineering.">
+  <section class="grid items-center gap-12 py-8 lg:grid-cols-2 lg:py-16">
+    <div>
+      <p class="eyebrow">decorte industries / data &amp; python engineering</p>
+      <h1 class="mt-4 font-display text-4xl font-semibold leading-tight tracking-tight text-ink sm:text-5xl">
+        Data infrastructure your team can actually trust.
+      </h1>
+      <p class="mt-5 max-w-lg text-lg text-smoke">{tagline}</p>
+      <div class="mt-8 flex flex-wrap items-center gap-4">
+        <a
+          href="/contact"
+          class="inline-block rounded-md bg-signal px-6 py-3 text-sm font-semibold text-white transition hover:bg-signal-dark"
+        >
+          Get in touch
+        </a>
+        <a href="/services" class="text-sm font-semibold text-ink underline decoration-ink/30 underline-offset-4 hover:decoration-ink">
+          View services
+        </a>
+      </div>
+    </div>
+
+    <div class="flex flex-col items-center gap-3 lg:items-end">
+      <PipelineDiagram />
+      <p class="font-mono text-xs text-smoke">medallion architecture, in miniature</p>
+    </div>
+  </section>
+
+  <section class="mt-4 grid gap-5 sm:grid-cols-2">
+    {displayServices.map((service) => (
+      <a
+        href={service.anchor ? `/services#${service.anchor}` : '/services'}
+        class="group rounded-md border border-ink/10 bg-white p-6 transition hover:border-ink/25 hover:shadow-sm"
+      >
+        <div class={`inline-flex h-9 w-9 items-center justify-center rounded border border-ink/15 ${tierTextClass[service.color as keyof typeof tierTextClass] ?? 'text-signal'}`}>
+          <ServiceIcon name={service.icon} />
+        </div>
+        <h2 class="mt-4 font-display text-lg font-semibold text-ink">{service.title}</h2>
+        <p class="mt-2 text-sm text-smoke">{service.summary}</p>
+        <span class="mt-4 inline-flex items-center gap-1 font-mono text-xs font-medium uppercase tracking-widest text-ink">
+          Learn more
+          <span aria-hidden="true" class="transition group-hover:translate-x-0.5">&rarr;</span>
+        </span>
+      </a>
+    ))}
+  </section>
+</BaseLayout>

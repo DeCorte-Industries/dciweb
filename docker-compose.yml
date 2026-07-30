@@ -1,0 +1,23 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PUBLIC_SANITY_PROJECT_ID: ${PUBLIC_SANITY_PROJECT_ID:-}
+        PUBLIC_SANITY_DATASET: ${PUBLIC_SANITY_DATASET:-production}
+        PUBLIC_SANITY_API_VERSION: ${PUBLIC_SANITY_API_VERSION:-2024-01-01}
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    restart: unless-stopped
+
+  studio:
+    build:
+      context: ./sanity
+      dockerfile: Dockerfile
+      args:
+        SANITY_STUDIO_PROJECT_ID: ${SANITY_STUDIO_PROJECT_ID:-}
+        SANITY_STUDIO_DATASET: ${SANITY_STUDIO_DATASET:-production}
+    ports:
+      - "${STUDIO_PORT:-8081}:80"
+    restart: unless-stopped

@@ -1,0 +1,59 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const principles = [
+  {
+    name: 'senior_only',
+    detail: 'Every engagement is staffed by senior engineers directly — no account-manager layer between you and the work.',
+  },
+  {
+    name: 'right_sized',
+    detail: 'Project teams, fractional retainers, or a single Python engineer — sized to the problem, not a fixed package.',
+  },
+  {
+    name: 'built_to_hand_off',
+    detail: 'Documentation and knowledge transfer from day one, so your team can maintain what we build.',
+  },
+];
+---
+
+<BaseLayout title="About" description="About DeCorte Industries.">
+  <p class="eyebrow">about</p>
+  <h1 class="mt-3 font-display text-3xl font-semibold text-ink sm:text-4xl">Senior engineers. No middle layer.</h1>
+
+  <p class="mt-5 max-w-2xl text-smoke">
+    DeCorte Industries is a data engineering and software consulting firm
+    specializing in cloud-native platforms and production-grade Python
+    services. Our engineers bring decades of combined experience across
+    data infrastructure, backend systems, and DevOps — from greenfield
+    platform builds to large-scale, mission-critical data pipelines.
+  </p>
+  <p class="mt-4 max-w-2xl text-smoke">
+    Recent engagements span Snowflake architecture, CDC pipeline engineering,
+    dimensional modeling, and large-scale ETL/ELT — alongside Python
+    backend services built with FastAPI, Flask, and SQLAlchemy, deployed
+    on AWS Lambda, ECS, and EKS with Terraform and AWS CDK.
+  </p>
+
+  <div class="mt-8 max-w-2xl overflow-hidden rounded-md border border-ink/10 bg-white">
+    <div class="flex items-center gap-3 border-b border-ink/10 px-6 py-3">
+      <span class="h-2 w-2 rounded-full bg-signal" aria-hidden="true"></span>
+      <span class="font-mono text-xs uppercase tracking-widest text-smoke">table · principles</span>
+    </div>
+    <ul class="divide-y divide-ink/5">
+      {principles.map((principle) => (
+        <li class="flex flex-col gap-1 px-6 py-4 sm:flex-row sm:gap-6">
+          <span class="w-40 shrink-0 font-mono text-xs uppercase tracking-wide text-ink">{principle.name}</span>
+          <span class="text-sm text-smoke">{principle.detail}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <p class="mt-8 max-w-2xl text-smoke">
+    Whether you need a dedicated project team or a fractional data
+    engineer, we scale to fit. See the
+    <a href="/services" class="font-medium text-signal underline hover:text-signal-dark">Services</a> page
+    for a full breakdown, or <a href="/contact" class="font-medium text-signal underline hover:text-signal-dark">get in touch</a>.
+  </p>
+</BaseLayout>

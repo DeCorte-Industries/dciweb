@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Visible keyboard focus everywhere — never suppressed. */
+:focus-visible {
+  outline: 2px solid theme('colors.signal.DEFAULT');
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Eyebrow: a mono, SQL-comment-styled label used above headings. */
+.eyebrow {
+  font-family: theme('fontFamily.mono');
+  font-size: 0.8125rem;
+  letter-spacing: 0.02em;
+  color: theme('colors.smoke');
+}
+.eyebrow::before {
+  content: '-- ';
+  color: theme('colors.silver');
+}
