@@ -8,6 +8,8 @@
     "start": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
+    "deploy": "npm run build && wrangler deploy",
+    "cf-typegen": "wrangler types",
     "astro": "astro",
     "sanity:dev": "cd sanity && sanity dev",
     "sanity:deploy": "cd sanity && sanity deploy"
@@ -23,6 +25,8 @@
   },
   "devDependencies": {
     "sanity": "^3.63.0",
-    "@sanity/vision": "^3.63.0"
+    "@sanity/vision": "^3.63.0",
+    "@astrojs/cloudflare": "^11.2.0",
+    "wrangler": "^4.120.1"
   }
 }

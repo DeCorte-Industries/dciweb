@@ -18,3 +18,8 @@ npm-debug.log*
 # sanity
 sanity/node_modules/
 sanity/dist/
+
+# wrangler / cloudflare
+.wrangler/
+.dev.vars
+worker-configuration.d.ts

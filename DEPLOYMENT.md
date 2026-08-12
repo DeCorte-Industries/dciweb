@@ -111,10 +111,10 @@ gh repo create decorteindustries/dciweb --private --source=. --push
 1. In the Cloudflare dashboard, **Add a domain** → enter `decorteindustries.com`.
 2. Cloudflare scans for existing records automatically, but don't rely on the scan alone — manually recreate the full set from `DNS_BACKUP.md`:
    - All 7 MX records (`aspmx.l.google.com` priority 10, `alt1`/`alt2.aspmx.l.google.com` priority 20, `aspmx2`–`aspmx5.googlemail.com` priority 30) — these keep `@decorteindustries.com` email working. Get these exactly right.
-   - `docs` → CNAME → `ghs.google.com` (confirmed still in use)
-   - `mail` → CNAME → `ghs.google.com` (confirmed still in use)
+   - `docs` → CNAME → `ghs.google.com` — **set to "DNS only" (grey cloud), not Proxied.** If left proxied, Cloudflare tries to terminate SSL to the origin itself and you'll get a 525 "SSL handshake failed" error. Even DNS-only, `ghs.google.com` may no longer work at all — it's the old classic Google Sites endpoint, which Google retired; the current equivalent hostname is `ghs.googlehosted.com`. See `DNS_BACKUP.md` for the latest status before assuming this one still works.
+   - `mail` → CNAME → `ghs.google.com` — same caveats as `docs` above.
    - Do **not** recreate `calendar`, `sites`, or `start` — confirmed unused.
-   - Leave `@` (root) and `www` for now — those will point at the Workers deployment once it exists (step 4), not at `ghs.google.com`.
+   - Leave `@` (root) and `www` for now — those will point at the Workers deployment once it exists (step 3), not at `ghs.google.com`. **Important:** don't just leave the old `@` A records (`216.239.32.21` etc.) and `www` CNAME in place expecting them to get overwritten automatically — delete them before step 3.6. Cloudflare's Custom Domains feature refuses to attach a Worker to a hostname that already has externally-managed records and will fail with `Hostname 'decorteindustries.com' already has externally managed DNS records (A, CNAME, etc). Delete them first or try a different hostname.` if you skip this.
 3. Cloudflare will show you two nameservers to set at your current registrar — since this domain is registered through **Enom**, that's where you'll make the change (not admin.google.com, which only manages Workspace apps/email, not DNS/nameservers for an Enom-registered domain).
 4. If DNSSEC is enabled at Enom, disable it first and wait ~24 hours before changing nameservers, or DNS resolution can break partway through the switch.
 5. Set the nameservers at Enom:
@@ -131,7 +131,7 @@ gh repo create decorteindustries/dciweb --private --source=. --push
 1. **Workers & Pages → Create application → Import a Git repository**, connect GitHub, select the `dciweb` repo.
 2. Confirm build settings: build command `npm run build`, static assets directory `dist`. No Cloudflare adapter is needed — `astro.config.mjs` already has `output: 'static'`.
 3. If the repo has no `wrangler.jsonc`, Cloudflare opens a pull request adding one — merge it.
-4. Add environment variables before the first deploy: `PUBLIC_SANITY_PROJECT_ID`, `PUBLIC_SANITY_DATASET`, `PUBLIC_SANITY_API_VERSION` (same as the other deployment options — baked in at build time, so changing them later requires a rebuild).
+4. Environment variables — `PUBLIC_SANITY_PROJECT_ID`, `PUBLIC_SANITY_DATASET`, `PUBLIC_SANITY_API_VERSION` — are optional and only needed once a real Sanity project exists. If you don't have one yet, **don't add these rows at all** (Cloudflare's env var UI requires a value once a row exists, and an empty string isn't the right move here). With no `PUBLIC_SANITY_PROJECT_ID` set, `src/lib/sanity.ts` skips creating the Sanity client and every page falls back to its built-in default content — the same behavior already used in local dev. Once you run `npx sanity init` and have a real project ID, add the three real values and trigger a fresh deploy (they're baked in at build time, so the existing build won't pick them up without a rebuild).
 5. Deploy, and verify on the `*.workers.dev` URL before touching the domain.
 6. In the Worker's settings, add `decorteindustries.com` and `www.decorteindustries.com` as custom domains. Since the zone is already active on Cloudflare from step 2, this now points `@` and `www` at the site instead of the old `ghs.google.com` records.
 

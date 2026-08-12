@@ -11,6 +11,75 @@ try {
 
 const email = settings?.contactEmail ?? 'info@decorteindustries.com';
 const phone = settings?.phone ?? '';
+
+type BookingTier = 'bronze' | 'silver' | 'gold';
+
+interface BookingOption {
+  namespace: string;
+  calLink: string;
+  label: string;
+  title: string;
+  description: string;
+  tier: BookingTier;
+}
+
+// Reuse the medallion tiers from the hero diagram (raw → clean → modeled)
+// as the escalation from a light-touch intro to the paid consultation —
+// the same bronze/silver/gold vocabulary the rest of the site already
+// uses, not a new palette invented for these three buttons.
+const bookingOptions: BookingOption[] = [
+  {
+    namespace: '15min',
+    calLink: 'wjdecorte/15min',
+    label: 'free',
+    title: '15-Minute Intro',
+    description: "A quick call to see if there's a fit before either of us commits more time.",
+    tier: 'bronze',
+  },
+  {
+    namespace: '30min',
+    calLink: 'wjdecorte/30min',
+    label: 'free',
+    title: '30-Minute Review',
+    description: 'Walk through a specific problem — a pipeline, a stack decision, a stuck project.',
+    tier: 'silver',
+  },
+  {
+    namespace: 'initial-consultation',
+    calLink: 'wjdecorte/initial-consultation',
+    label: 'paid',
+    title: '30-Minute Consultation',
+    description: 'A focused working session that ends with a scoped recommendation you can act on.',
+    tier: 'gold',
+  },
+];
+
+// Full literal class strings per tier (not built via template interpolation)
+// so Tailwind's static scanner picks them up, matching the pattern already
+// used for tierTextClass/tierBgClass in lib/services.ts.
+const tierStyles: Record<BookingTier, { topBorder: string; dot: string; text: string; hoverBorder: string; hoverBg: string }> = {
+  bronze: {
+    topBorder: 'border-t-bronze',
+    dot: 'bg-bronze',
+    text: 'text-bronze',
+    hoverBorder: 'hover:border-bronze',
+    hoverBg: 'hover:bg-bronze/5',
+  },
+  silver: {
+    topBorder: 'border-t-silver',
+    dot: 'bg-silver',
+    text: 'text-silver',
+    hoverBorder: 'hover:border-silver',
+    hoverBg: 'hover:bg-silver/5',
+  },
+  gold: {
+    topBorder: 'border-t-gold',
+    dot: 'bg-gold',
+    text: 'text-gold',
+    hoverBorder: 'hover:border-gold',
+    hoverBg: 'hover:bg-gold/5',
+  },
+};
 ---
 
 <BaseLayout title="Contact" description="Contact DeCorte Industries.">
@@ -24,4 +93,88 @@ const phone = settings?.phone ?? '';
     <p>Email: <a class="font-medium text-signal underline hover:text-signal-dark" href={`mailto:${email}`}>{email}</a></p>
     {phone && <p>Phone: {phone}</p>}
   </div>
+
+  <div class="mt-12">
+    <p class="eyebrow">book a session</p>
+    <h2 class="mt-3 font-display text-2xl font-semibold text-ink">Prefer to just grab time on the calendar?</h2>
+    <div class="mt-6 grid gap-4 sm:grid-cols-3">
+      {bookingOptions.map((option) => (
+        <button
+          type="button"
+          data-cal-link={option.calLink}
+          data-cal-namespace={option.namespace}
+          data-cal-config={JSON.stringify({ layout: 'month_view' })}
+          class={`group flex flex-col items-start rounded-md border border-ink/10 border-t-4 bg-white p-5 text-left transition-all duration-200 hover:-translate-y-1 hover:shadow-lg ${tierStyles[option.tier].topBorder} ${tierStyles[option.tier].hoverBorder} ${tierStyles[option.tier].hoverBg}`}
+        >
+          <span class="flex items-center gap-2">
+            <span class={`h-1.5 w-1.5 rounded-full ${tierStyles[option.tier].dot} transition-transform duration-200 group-hover:scale-150`} aria-hidden="true"></span>
+            <span class={`font-mono text-xs font-medium uppercase tracking-widest ${tierStyles[option.tier].text}`}>{option.label}</span>
+          </span>
+          <span class="mt-3 font-display text-lg font-semibold text-ink">{option.title}</span>
+          <span class="mt-1.5 text-sm text-smoke">{option.description}</span>
+          <span class={`mt-4 inline-flex items-center gap-1.5 font-mono text-xs font-medium ${tierStyles[option.tier].text}`}>
+            Book session
+            <span class="transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true">→</span>
+          </span>
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <script is:inline>
+    (function (C, A, L) {
+      let p = function (a, ar) {
+        a.q.push(ar);
+      };
+      let d = C.document;
+      C.Cal =
+        C.Cal ||
+        function () {
+          let cal = C.Cal;
+          let ar = arguments;
+          if (!cal.loaded) {
+            cal.ns = {};
+            cal.q = cal.q || [];
+            d.head.appendChild(d.createElement('script')).src = A;
+            cal.loaded = true;
+          }
+          if (ar[0] === L) {
+            const api = function () {
+              p(api, arguments);
+            };
+            const namespace = ar[1];
+            api.q = api.q || [];
+            if (typeof namespace === 'string') {
+              cal.ns[namespace] = cal.ns[namespace] || api;
+              p(cal.ns[namespace], ar);
+              p(cal, ['initNamespace', namespace]);
+            } else {
+              p(cal, ar);
+            }
+            return;
+          }
+          p(cal, ar);
+        };
+    })(window, 'https://app.cal.com/embed/embed.js', 'init');
+
+    Cal('init', '15min', { origin: 'https://cal.com' });
+    Cal('init', '30min', { origin: 'https://cal.com' });
+    Cal('init', 'initial-consultation', { origin: 'https://cal.com' });
+
+    Cal.ns['15min']('ui', {
+      styles: { branding: { brandColor: '#3457A0' } },
+      hideEventTypeDetails: false,
+      layout: 'month_view',
+    });
+    Cal.ns['30min']('ui', {
+      styles: { branding: { brandColor: '#3457A0' } },
+      hideEventTypeDetails: false,
+      layout: 'month_view',
+    });
+    Cal.ns['initial-consultation']('ui', {
+      styles: { branding: { brandColor: '#3457A0' } },
+      hideEventTypeDetails: false,
+      layout: 'month_view',
+    });
+  </script>
 </BaseLayout>
