@@ -11,8 +11,9 @@ try {
   // Sanity not configured yet.
 }
 
-// Sanity-sourced services won't have our local `detail` field, so fall
-// back to rendering just the summary as the intro with no bullet list.
+// Sanity documents use `slug.current` instead of the fallback data's `id`,
+// and older/incomplete documents may be missing `detail` if a service was
+// only partly filled out in the Studio — normalize both here.
 const rawServices = cmsServices.length ? cmsServices : fallbackServices;
 const displayServices = rawServices.map((s: any) => ({
   id: s.id ?? s.slug?.current ?? '',

@@ -19,8 +19,9 @@ const tagline =
   "Cloud data platforms and Python engineering for teams that can't afford to get their data infrastructure wrong.";
 
 // Sanity-sourced services and our local fallback data are shaped
-// differently (the CMS type has no icon/color/id), so normalize both into
-// one renderable shape here rather than fighting the type checker.
+// slightly differently (the CMS type uses `slug.current` instead of `id`),
+// so normalize both into one renderable shape here rather than fighting
+// the type checker.
 const rawServices = cmsServices.length ? cmsServices : fallbackServices;
 const displayServices = rawServices.map((s: any) => ({
   title: s.title,
