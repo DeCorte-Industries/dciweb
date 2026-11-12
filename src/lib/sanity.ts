@@ -21,12 +21,19 @@ export function urlFor(source: any) {
   return imageUrlBuilder(sanityClient).image(source);
 }
 
+export interface SocialLink {
+  label: string;
+  url: string;
+}
+
 export interface SiteSettings {
   companyName: string;
   tagline: string;
   contactEmail: string;
   phone: string;
   address: string;
+  location?: string;
+  socialLinks?: SocialLink[];
 }
 
 export interface ServiceDetail {
