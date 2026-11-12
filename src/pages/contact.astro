@@ -13,7 +13,7 @@ const email = settings?.contactEmail ?? 'info@decorteindustries.com';
 const phone = settings?.phone ?? '';
 
 type BookingTier = 'bronze' | 'silver' | 'gold';
-type BookingGroup = 'quick' | 'deep';
+type BookingGroup = 'intro' | 'quick' | 'deep';
 
 interface BookingOption {
   namespace: string;
@@ -27,26 +27,29 @@ interface BookingOption {
 }
 
 // Reuse the medallion tiers from the hero diagram (raw → clean → modeled)
-// as an escalation in depth/commitment: the quick 15/30-minute calls (any
-// medium) all read as the same "raw" tier, the free hour-long interview is
-// a step up, and the paid consultation is the top tier — not a new palette
-// invented for these cards.
+// as an escalation in depth/commitment: the free calls (any length or
+// medium) all read as the same "raw" tier and the paid consultation is the
+// top tier — not a new palette invented for these cards.
+//
+// The free 15-minute intro (video) is the default "Book a call" option and
+// gets the featured slot; everything else sits below it. The paid
+// consultation stays bookable but its price is deliberately not shown.
 const bookingOptions: BookingOption[] = [
   {
     namespace: '15min-video',
     calLink: 'wjdecorte/15min-video',
     label: 'free',
-    title: '15-Minute Call',
+    title: 'Free 15-Minute Intro Call',
     medium: 'Video · Google Meet',
     description: "A quick face-to-face call to see if there's a fit before either of us commits more time.",
     tier: 'bronze',
-    group: 'quick',
+    group: 'intro',
   },
   {
     namespace: '15-minute-phone',
     calLink: 'wjdecorte/15-minute-phone',
     label: 'free',
-    title: '15-Minute Call',
+    title: '15-Minute Phone Call',
     medium: 'Phone',
     description: 'The same quick intro, over a plain phone call instead of video.',
     tier: 'bronze',
@@ -56,7 +59,7 @@ const bookingOptions: BookingOption[] = [
     namespace: '30min-video',
     calLink: 'wjdecorte/30min-video',
     label: 'free',
-    title: '30-Minute Call',
+    title: '30-Minute Video Call',
     medium: 'Video · Google Meet',
     description: 'More time to walk through a specific problem — a pipeline, a stack decision, a stuck project.',
     tier: 'bronze',
@@ -66,21 +69,11 @@ const bookingOptions: BookingOption[] = [
     namespace: '30-minute-phone',
     calLink: 'wjdecorte/30-minute-phone',
     label: 'free',
-    title: '30-Minute Call',
+    title: '30-Minute Phone Call',
     medium: 'Phone',
     description: 'The same 30-minute conversation, by phone instead of video.',
     tier: 'bronze',
     group: 'quick',
-  },
-  {
-    namespace: 'one-hour-interview',
-    calLink: 'wjdecorte/one-hour-interview',
-    label: 'free',
-    title: 'One-Hour Interview',
-    medium: 'Video · Google Meet',
-    description: 'An extended conversation — useful for a deeper technical discussion or a hiring interview.',
-    tier: 'silver',
-    group: 'deep',
   },
   {
     namespace: 'initial-consultation',
@@ -94,8 +87,8 @@ const bookingOptions: BookingOption[] = [
   },
 ];
 
-const quickOptions = bookingOptions.filter((option) => option.group === 'quick');
-const deepOptions = bookingOptions.filter((option) => option.group === 'deep');
+const introOption = bookingOptions.find((option) => option.group === 'intro')!;
+const otherOptions = bookingOptions.filter((option) => option.group !== 'intro');
 
 // Full literal class strings per tier (not built via template interpolation)
 // so Tailwind's static scanner picks them up, matching the pattern already
@@ -138,37 +131,32 @@ const tierStyles: Record<BookingTier, { topBorder: string; dot: string; text: st
   </div>
 
   <div class="mt-12">
-    <p class="eyebrow">book a session</p>
-    <h2 class="mt-3 font-display text-2xl font-semibold text-ink">Prefer to just grab time on the calendar?</h2>
+    <p class="eyebrow">book a call</p>
+    <h2 class="mt-3 font-display text-2xl font-semibold text-ink">Start with a free 15-minute intro</h2>
 
-    <p class="mt-6 font-mono text-xs font-medium uppercase tracking-widest text-smoke">Quick calls</p>
+    <button
+      type="button"
+      data-cal-link={introOption.calLink}
+      data-cal-namespace={introOption.namespace}
+      data-cal-config={JSON.stringify({ layout: 'month_view' })}
+      class={`group mt-6 flex w-full max-w-xl flex-col items-start rounded-md border border-ink/10 border-t-4 bg-white p-6 text-left transition-all duration-200 hover:-translate-y-1 hover:shadow-lg ${tierStyles[introOption.tier].topBorder} ${tierStyles[introOption.tier].hoverBorder} ${tierStyles[introOption.tier].hoverBg}`}
+    >
+      <span class="flex items-center gap-2">
+        <span class={`h-1.5 w-1.5 rounded-full ${tierStyles[introOption.tier].dot} transition-transform duration-200 group-hover:scale-150`} aria-hidden="true"></span>
+        <span class={`font-mono text-xs font-medium uppercase tracking-widest ${tierStyles[introOption.tier].text}`}>{introOption.label}</span>
+      </span>
+      <span class="mt-3 font-display text-xl font-semibold text-ink">{introOption.title}</span>
+      <span class="mt-1 font-mono text-xs text-smoke">{introOption.medium}</span>
+      <span class="mt-1.5 text-sm text-smoke">{introOption.description}</span>
+      <span class="mt-5 inline-flex items-center gap-1.5 rounded-md bg-signal px-4 py-2 text-sm font-semibold text-white transition group-hover:bg-signal-dark">
+        Book a call
+        <span class="transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true">→</span>
+      </span>
+    </button>
+
+    <p class="mt-10 font-mono text-xs font-medium uppercase tracking-widest text-smoke">Other options</p>
     <div class="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      {quickOptions.map((option) => (
-        <button
-          type="button"
-          data-cal-link={option.calLink}
-          data-cal-namespace={option.namespace}
-          data-cal-config={JSON.stringify({ layout: 'month_view' })}
-          class={`group flex flex-col items-start rounded-md border border-ink/10 border-t-4 bg-white p-5 text-left transition-all duration-200 hover:-translate-y-1 hover:shadow-lg ${tierStyles[option.tier].topBorder} ${tierStyles[option.tier].hoverBorder} ${tierStyles[option.tier].hoverBg}`}
-        >
-          <span class="flex items-center gap-2">
-            <span class={`h-1.5 w-1.5 rounded-full ${tierStyles[option.tier].dot} transition-transform duration-200 group-hover:scale-150`} aria-hidden="true"></span>
-            <span class={`font-mono text-xs font-medium uppercase tracking-widest ${tierStyles[option.tier].text}`}>{option.label}</span>
-          </span>
-          <span class="mt-3 font-display text-lg font-semibold text-ink">{option.title}</span>
-          <span class="mt-1 font-mono text-xs text-smoke">{option.medium}</span>
-          <span class="mt-1.5 text-sm text-smoke">{option.description}</span>
-          <span class={`mt-4 inline-flex items-center gap-1.5 font-mono text-xs font-medium ${tierStyles[option.tier].text}`}>
-            Book session
-            <span class="transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true">→</span>
-          </span>
-        </button>
-      ))}
-    </div>
-
-    <p class="mt-8 font-mono text-xs font-medium uppercase tracking-widest text-smoke">Longer sessions</p>
-    <div class="mt-3 grid gap-4 sm:grid-cols-2">
-      {deepOptions.map((option) => (
+      {otherOptions.map((option) => (
         <button
           type="button"
           data-cal-link={option.calLink}
@@ -232,7 +220,6 @@ const tierStyles: Record<BookingTier, { topBorder: string; dot: string; text: st
     Cal('init', '15-minute-phone', { origin: 'https://cal.com' });
     Cal('init', '30min-video', { origin: 'https://cal.com' });
     Cal('init', '30-minute-phone', { origin: 'https://cal.com' });
-    Cal('init', 'one-hour-interview', { origin: 'https://cal.com' });
     Cal('init', 'initial-consultation', { origin: 'https://cal.com' });
 
     Cal.ns['15min-video']('ui', {
@@ -251,11 +238,6 @@ const tierStyles: Record<BookingTier, { topBorder: string; dot: string; text: st
       layout: 'month_view',
     });
     Cal.ns['30-minute-phone']('ui', {
-      styles: { branding: { brandColor: '#3457A0' } },
-      hideEventTypeDetails: false,
-      layout: 'month_view',
-    });
-    Cal.ns['one-hour-interview']('ui', {
       styles: { branding: { brandColor: '#3457A0' } },
       hideEventTypeDetails: false,
       layout: 'month_view',

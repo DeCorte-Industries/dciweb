@@ -1,59 +1,88 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { bookkeepingDisclaimer, getSiteConfig } from '../lib/site';
 
+const { location, socialLinks } = await getSiteConfig();
+
+// "senior_only" and "built_to_hand_off" are kept from the previous About
+// page (the review called them good sales copy); "remote_by_default" adds
+// the remote, low-meeting way of working the review asked for.
 const principles = [
   {
     name: 'senior_only',
-    detail: 'Every engagement is staffed by senior engineers directly — no account-manager layer between you and the work.',
-  },
-  {
-    name: 'right_sized',
-    detail: 'Project teams, fractional retainers, or a single Python engineer — sized to the problem, not a fixed package.',
+    detail: 'You work directly with a senior engineer. No account-manager layer between you and the work.',
   },
   {
     name: 'built_to_hand_off',
-    detail: 'Documentation and knowledge transfer from day one, so your team can maintain what we build.',
+    detail: 'Documentation and knowledge transfer from day one, so you can run what we build without us.',
+  },
+  {
+    // INVENTED COPY: review
+    name: 'remote_by_default',
+    detail: 'Remote across the US, with written updates instead of standing meetings. Calls when they help, not by habit.',
   },
 ];
 ---
 
-<BaseLayout title="About" description="About DeCorte Industries.">
+<BaseLayout title="About" description="About DeCorte Industries: data, Python, and AWS engineering for teams, and practical systems for small businesses.">
   <p class="eyebrow">about</p>
-  <h1 class="mt-3 font-display text-3xl font-semibold text-ink sm:text-4xl">Senior engineers. No middle layer.</h1>
+  <!-- INVENTED COPY: review (headline and the two audience paragraphs) -->
+  <h1 class="mt-3 font-display text-3xl font-semibold text-ink sm:text-4xl">Engineers who have also run the books.</h1>
+  <p class="mt-3 font-mono text-xs text-smoke">{location}</p>
 
-  <p class="mt-5 max-w-2xl text-smoke">
-    DeCorte Industries is a data engineering and software consulting firm
-    specializing in cloud-native platforms and production-grade Python
-    services. Our engineers bring decades of combined experience across
-    data infrastructure, backend systems, and DevOps — from greenfield
-    platform builds to large-scale, mission-critical data pipelines.
-  </p>
-  <p class="mt-4 max-w-2xl text-smoke">
-    Recent engagements span Snowflake architecture, CDC pipeline engineering,
-    dimensional modeling, and large-scale ETL/ELT — alongside Python
-    backend services built with FastAPI, Flask, and SQLAlchemy, deployed
-    on AWS Lambda, ECS, and EKS with Terraform and AWS CDK.
+  <p class="mt-6 max-w-2xl text-smoke">
+    DeCorte Industries is a small consultancy with two kinds of clients, and we treat them as equals.
   </p>
 
-  <div class="mt-8 max-w-2xl overflow-hidden rounded-md border border-ink/10 bg-white">
+  <div class="mt-8 grid max-w-4xl gap-5 sm:grid-cols-2">
+    <div class="rounded-md border border-ink/10 border-t-4 border-t-signal bg-white p-6">
+      <p class="font-mono text-xs font-medium uppercase tracking-widest text-signal">for engineering teams</p>
+      <p class="mt-3 text-sm text-smoke">
+        We build data platforms and Python services on AWS: Snowflake architecture, CDC pipelines,
+        dimensional models, and large-scale ETL/ELT, alongside backend services built with FastAPI, Flask,
+        and SQLAlchemy and deployed with Terraform and AWS CDK. Project builds or a fractional data engineer,
+        sized to the problem.
+      </p>
+    </div>
+    <div class="rounded-md border border-ink/10 border-t-4 border-t-gold bg-white p-6">
+      <p class="font-mono text-xs font-medium uppercase tracking-widest text-gold">for small businesses</p>
+      <p class="mt-3 text-sm text-smoke">
+        We bring 25+ years of running small-business operations, including bookkeeping and payroll. That
+        means books and payroll data cleanup, documented processes, practical automation, and fast,
+        low-maintenance websites, from people who know what month-end actually looks like.
+      </p>
+      <p class="mt-4 text-xs leading-relaxed text-smoke/80">{bookkeepingDisclaimer}</p>
+    </div>
+  </div>
+
+  <div class="mt-10 max-w-2xl overflow-hidden rounded-md border border-ink/10 bg-white">
     <div class="flex items-center gap-3 border-b border-ink/10 px-6 py-3">
       <span class="h-2 w-2 rounded-full bg-signal" aria-hidden="true"></span>
-      <span class="font-mono text-xs uppercase tracking-widest text-smoke">table · principles</span>
+      <span class="font-mono text-xs uppercase tracking-widest text-smoke">table · how we work</span>
     </div>
     <ul class="divide-y divide-ink/5">
       {principles.map((principle) => (
         <li class="flex flex-col gap-1 px-6 py-4 sm:flex-row sm:gap-6">
-          <span class="w-40 shrink-0 font-mono text-xs uppercase tracking-wide text-ink">{principle.name}</span>
+          <span class="w-44 shrink-0 font-mono text-xs uppercase tracking-wide text-ink">{principle.name}</span>
           <span class="text-sm text-smoke">{principle.detail}</span>
         </li>
       ))}
     </ul>
   </div>
 
-  <p class="mt-8 max-w-2xl text-smoke">
-    Whether you need a dedicated project team or a fractional data
-    engineer, we scale to fit. See the
-    <a href="/services" class="font-medium text-signal underline hover:text-signal-dark">Services</a> page
-    for a full breakdown, or <a href="/contact" class="font-medium text-signal underline hover:text-signal-dark">get in touch</a>.
+  <div class="mt-10 max-w-2xl">
+    <p class="eyebrow">find us</p>
+    <ul class="mt-3 flex flex-wrap gap-x-6 gap-y-2">
+      {socialLinks.map((link) => (
+        <li>
+          <a href={link.url} rel="me noopener" target="_blank" class="font-medium text-signal underline hover:text-signal-dark">{link.label}</a>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <p class="mt-10 max-w-2xl text-smoke">
+    See the <a href="/services" class="font-medium text-signal underline hover:text-signal-dark">services</a>,
+    or <a href="/contact" class="font-medium text-signal underline hover:text-signal-dark">book a free 15-minute intro call</a>.
   </p>
 </BaseLayout>

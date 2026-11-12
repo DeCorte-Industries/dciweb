@@ -4,12 +4,15 @@ interface Props {
 }
 const { companyName = 'DeCorte Industries' } = Astro.props;
 
+// The engineering / small-business doors, /work and /pricing join this
+// list in later redesign batches. "Book a call" is the primary action, so
+// it renders as a button rather than a plain nav link.
 const navItems = [
-  { label: 'Home', href: '/' },
-  { label: 'About', href: '/about' },
   { label: 'Services', href: '/services' },
-  { label: 'Contact', href: '/contact' },
+  { label: 'About', href: '/about' },
+  { label: 'Blog', href: '/blog' },
 ];
+const bookCall = { label: 'Book a call', href: '/contact' };
 
 const currentPath = Astro.url.pathname;
 ---
@@ -20,7 +23,7 @@ const currentPath = Astro.url.pathname;
       <img src="/logo-icon.png" alt="" class="h-8 w-auto" />
       <span class="font-display text-lg font-semibold tracking-tight text-ink">{companyName}</span>
     </a>
-    <nav class="hidden gap-8 sm:flex">
+    <nav class="hidden items-center gap-8 sm:flex">
       {navItems.map((item) => {
         const isActive = currentPath === item.href;
         return (
@@ -36,6 +39,13 @@ const currentPath = Astro.url.pathname;
           </a>
         );
       })}
+      <a
+        href={bookCall.href}
+        aria-current={currentPath === bookCall.href ? 'page' : undefined}
+        class="rounded-md bg-signal px-4 py-2 text-sm font-semibold text-white transition hover:bg-signal-dark"
+      >
+        {bookCall.label}
+      </a>
     </nav>
     <button
       id="menu-toggle"
@@ -53,6 +63,12 @@ const currentPath = Astro.url.pathname;
     {navItems.map((item) => (
       <a href={item.href} class="py-1.5 font-mono text-xs font-medium uppercase tracking-widest text-smoke">{item.label}</a>
     ))}
+    <a
+      href={bookCall.href}
+      class="mt-2 self-start rounded-md bg-signal px-4 py-2 text-sm font-semibold text-white transition hover:bg-signal-dark"
+    >
+      {bookCall.label}
+    </a>
   </nav>
 </header>
 
