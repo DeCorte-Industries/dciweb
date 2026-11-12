@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PipelineDiagram from '../components/PipelineDiagram.astro';
-import { getSiteConfig } from '../lib/site';
+import { bookkeepingDisclaimer, getSiteConfig } from '../lib/site';
 
 const { location, socialLinks } = await getSiteConfig();
 const linkedIn = socialLinks.find((link) => link.label.toLowerCase().startsWith('linkedin'));
@@ -59,6 +59,7 @@ const principles = [
         We build data platforms and Python services on AWS, and we bring 25+ years of running small-business
         operations, including bookkeeping and payroll. Remote, senior, and documented so you're never stuck.
       </p>
+      <p class="mt-3 max-w-lg text-xs leading-relaxed text-smoke/80">{bookkeepingDisclaimer}</p>
       <div class="mt-8 flex flex-wrap items-center gap-4">
         <a
           href="/contact"

@@ -1,6 +1,6 @@
 ---
 import type { SocialLink } from '../lib/sanity';
-import { fallbackContactEmail, fallbackLocation, fallbackSocialLinks } from '../lib/site';
+import { bookkeepingDisclaimer, fallbackContactEmail, fallbackLocation, fallbackSocialLinks } from '../lib/site';
 
 interface Props {
   companyName?: string;
@@ -60,5 +60,6 @@ const siteLinks = [
       <p>&copy; {year} {companyName}. All rights reserved.</p>
       <p>-- this site is built the same way we build yours</p>
     </div>
+    <p class="mt-3 max-w-3xl font-mono text-xs leading-relaxed text-paper/35">{bookkeepingDisclaimer}</p>
   </div>
 </footer>

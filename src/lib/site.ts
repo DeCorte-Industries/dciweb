@@ -14,6 +14,11 @@ export const fallbackLocation = 'Georgia-based, remote across the US';
 
 export const fallbackContactEmail = 'info@decorteindustries.com';
 
+// INVENTED COPY: review
+// Shown next to bookkeeping mentions on home and About, and in the footer.
+export const bookkeepingDisclaimer =
+  'DeCorte Industries provides bookkeeping and financial-records support, not tax, legal, audit, or CPA services. Clients should consult a licensed professional for those.';
+
 export interface SiteConfig {
   companyName: string;
   contactEmail: string;

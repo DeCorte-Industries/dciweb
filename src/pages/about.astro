@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getSiteConfig } from '../lib/site';
+import { bookkeepingDisclaimer, getSiteConfig } from '../lib/site';
 
 const { location, socialLinks } = await getSiteConfig();
 
@@ -51,6 +51,7 @@ const principles = [
         means books and payroll data cleanup, documented processes, practical automation, and fast,
         low-maintenance websites, from people who know what month-end actually looks like.
       </p>
+      <p class="mt-4 text-xs leading-relaxed text-smoke/80">{bookkeepingDisclaimer}</p>
     </div>
   </div>
 
