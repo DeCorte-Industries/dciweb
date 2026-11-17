@@ -46,10 +46,15 @@ export interface Service {
   _id: string;
   title: string;
   slug: { current: string };
+  audience?: 'engineering' | 'small-business';
   summary: string;
-  icon: 'database' | 'code' | 'server' | 'percent';
+  icon: 'database' | 'code' | 'server' | 'percent' | 'ledger' | 'workflow' | 'globe' | 'search';
   color: 'signal' | 'bronze' | 'silver' | 'gold';
   detail: ServiceDetail;
+  problem?: string;
+  steps?: { title: string; detail: string }[];
+  faqs?: { question: string; answer: string }[];
+  ctaLabel?: string;
   order: number;
 }
 

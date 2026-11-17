@@ -1,80 +1,90 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ServiceIcon from '../components/ServiceIcon.astro';
-import { getServices } from '../lib/sanity';
-import { fallbackServices, tierTextClass, tierBgClass } from '../lib/services';
+import CaseStudyCard from '../components/CaseStudyCard.astro';
+import { caseStudies } from '../lib/caseStudies';
+import { audienceLabels, loadServices, servicesFor, tierBgClass, tierTextClass, type ServiceAudience } from '../lib/services';
 
-let cmsServices: Awaited<ReturnType<typeof getServices>> = [];
-try {
-  cmsServices = await getServices();
-} catch {
-  // Sanity not configured yet.
-}
-
-// Sanity documents use `slug.current` instead of the fallback data's `id`,
-// and older/incomplete documents may be missing `detail` if a service was
-// only partly filled out in the Studio — normalize both here.
-const rawServices = cmsServices.length ? cmsServices : fallbackServices;
-const displayServices = rawServices.map((s: any) => ({
-  id: s.id ?? s.slug?.current ?? '',
-  title: s.title,
-  icon: s.icon ?? 'database',
-  color: s.color ?? 'signal',
-  detail: s.detail ?? { intro: s.summary, bullets: [], idealFor: '' },
-}));
+const services = await loadServices();
+const sections: { id: ServiceAudience; intro: string }[] = [
+  {
+    id: 'engineering',
+    // INVENTED COPY: review
+    intro: 'Data platforms, Python services, and AWS infrastructure, built to be handed off to your team.',
+  },
+  {
+    id: 'small-business',
+    // INVENTED COPY: review
+    intro: 'Clean books, documented processes, and a website that just works.',
+  },
+];
 ---
 
-<BaseLayout title="Services" description="Services offered by DeCorte Industries.">
+<BaseLayout
+  title="Engineering & Small Business Services"
+  description="Data engineering, Python, and AWS services for engineering teams, plus fixed-price AI cleanup, SOPs, websites, and SEO for small businesses."
+>
   <p class="eyebrow">services</p>
   <h1 class="mt-3 font-display text-3xl font-semibold text-ink sm:text-4xl">What we do</h1>
+  <!-- INVENTED COPY: review -->
   <p class="mt-4 max-w-2xl text-smoke">
-    Four ways to work with us — from a single project to an ongoing,
-    fractional part of your team. Each is backed by decades of combined
-    experience building production cloud-native platforms.
+    Two kinds of clients, treated as equals: engineering teams that need senior data and cloud work, and small
+    businesses that need their books, processes, and website in order.
   </p>
-
-  <div class="mt-10 space-y-6">
-    {displayServices.map((service) => (
-      <div id={service.id} class="scroll-mt-24 rounded-md border border-ink/10 bg-white">
-        <div class="flex items-center gap-3 border-b border-ink/10 px-6 py-3 sm:px-8">
-          <span class={`h-2 w-2 rounded-full ${tierBgClass[service.color as keyof typeof tierBgClass] ?? 'bg-signal'}`} aria-hidden="true"></span>
-          <span class="font-mono text-xs uppercase tracking-widest text-smoke">service · {service.id || 'general'}</span>
-        </div>
-
-        <div class="p-6 sm:p-8">
-          <div class="flex items-start gap-4">
-            <div class={`hidden h-11 w-11 shrink-0 items-center justify-center rounded border border-ink/15 sm:flex ${tierTextClass[service.color as keyof typeof tierTextClass] ?? 'text-signal'}`}>
-              <ServiceIcon name={service.icon} />
-            </div>
-            <div>
-              <h2 class="font-display text-xl font-semibold text-ink">{service.title}</h2>
-              <p class="mt-2 max-w-2xl text-smoke">{service.detail.intro}</p>
-            </div>
-          </div>
-
-          {service.detail.bullets.length > 0 && (
-            <ul class="mt-5 divide-y divide-ink/5 sm:ml-16">
-              {service.detail.bullets.map((bullet: string) => (
-                <li class="flex items-start gap-3 py-2.5 text-sm text-smoke">
-                  <span class={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${tierBgClass[service.color as keyof typeof tierBgClass] ?? 'bg-signal'}`} aria-hidden="true"></span>
-                  {bullet}
-                </li>
-              ))}
-            </ul>
-          )}
-
-          {service.detail.idealFor && (
-            <p class="mt-5 text-sm text-smoke sm:ml-16">
-              <span class="font-mono text-xs font-medium uppercase tracking-wide text-ink">Good fit for </span>
-              {service.detail.idealFor}
-            </p>
-          )}
-        </div>
-      </div>
+  <nav class="mt-6 flex flex-wrap gap-3" aria-label="Service sections">
+    {sections.map((section) => (
+      <a href={`#${section.id}`} class="rounded-md border border-ink/15 px-4 py-2 font-mono text-xs uppercase tracking-widest text-ink hover:border-signal hover:text-signal">
+        {audienceLabels[section.id].title}
+      </a>
     ))}
-  </div>
+  </nav>
 
-  <p class="mt-10 text-smoke">
-    Not sure which of these fits your situation? <a href="/contact" class="font-medium text-signal underline hover:text-signal-dark">Get in touch</a> and we'll help you figure it out.
+  {sections.map((section) => (
+    <section id={section.id} class="mt-14 scroll-mt-24" aria-labelledby={`${section.id}-heading`}>
+      <p class="eyebrow">{audienceLabels[section.id].eyebrow}</p>
+      <h2 id={`${section.id}-heading`} class="mt-2 font-display text-2xl font-semibold text-ink">{audienceLabels[section.id].title}</h2>
+      <p class="mt-2 max-w-2xl text-smoke">{section.intro}</p>
+
+      <div class="mt-6 grid gap-5 sm:grid-cols-2">
+        {servicesFor(services, section.id).map((service) => (
+          <a
+            id={service.id}
+            href={`/services/${service.id}/`}
+            class="group flex scroll-mt-24 flex-col rounded-md border border-ink/10 bg-white transition hover:border-signal hover:shadow-sm"
+          >
+            <div class="flex items-center gap-3 border-b border-ink/10 px-6 py-3">
+              <span class={`h-2 w-2 rounded-full ${tierBgClass[service.color] ?? 'bg-signal'}`} aria-hidden="true"></span>
+              <span class="font-mono text-xs uppercase tracking-widest text-smoke">service · {service.id}</span>
+            </div>
+            <div class="flex flex-1 flex-col p-6">
+              <div class="flex items-start gap-4">
+                <div class={`hidden h-11 w-11 shrink-0 items-center justify-center rounded border border-ink/15 sm:flex ${tierTextClass[service.color] ?? 'text-signal'}`}>
+                  <ServiceIcon name={service.icon} />
+                </div>
+                <div>
+                  <h3 class="font-display text-xl font-semibold text-ink group-hover:text-signal">{service.title}</h3>
+                  <p class="mt-2 text-sm text-smoke">{service.summary}</p>
+                </div>
+              </div>
+              <span class="mt-5 inline-flex items-center gap-1 font-mono text-xs font-medium uppercase tracking-widest text-signal sm:ml-[3.75rem]">
+                Details <span aria-hidden="true" class="transition group-hover:translate-x-0.5">&rarr;</span>
+              </span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  ))}
+
+  <section id="case-studies" class="mt-14 scroll-mt-24" aria-labelledby="case-studies-heading">
+    <p class="eyebrow">proof</p>
+    <h2 id="case-studies-heading" class="mt-2 font-display text-2xl font-semibold text-ink">Case studies</h2>
+    <div class="mt-6 grid gap-5 sm:grid-cols-2">
+      {caseStudies.map((study) => <CaseStudyCard study={study} />)}
+    </div>
+  </section>
+
+  <p class="mt-14 text-smoke">
+    Not sure which of these fits your situation? <a href="/contact/" class="font-medium text-signal underline hover:text-signal-dark">Book a free 15-minute intro call</a> and we'll help you figure it out.
   </p>
 </BaseLayout>

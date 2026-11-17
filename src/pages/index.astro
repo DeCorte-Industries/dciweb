@@ -16,7 +16,7 @@ const doors = [
     // INVENTED COPY: review
     title: 'Data platforms and Python services you can hand off.',
     items: ['Data engineering', 'Python backend', 'AWS cloud', 'Fractional data engineer'],
-    cta: { label: 'See engineering services', href: '/services' },
+    cta: { label: 'See engineering services', href: '/services/#engineering' },
   },
   {
     eyebrow: 'for small businesses',
@@ -24,7 +24,7 @@ const doors = [
     // INVENTED COPY: review
     title: 'Clean books, documented processes, and a site that just works.',
     items: ['Books and payroll cleanup', 'AI automation and SOPs', 'Websites', 'SEO'],
-    cta: { label: 'Book a free 15-minute intro', href: '/contact' },
+    cta: { label: 'Book a free 15-minute intro', href: '/contact/' },
   },
 ];
 
@@ -62,12 +62,12 @@ const principles = [
       <p class="mt-3 max-w-lg text-xs leading-relaxed text-smoke/80">{bookkeepingDisclaimer}</p>
       <div class="mt-8 flex flex-wrap items-center gap-4">
         <a
-          href="/contact"
+          href="/contact/"
           class="inline-block rounded-md bg-signal px-6 py-3 text-sm font-semibold text-white transition hover:bg-signal-dark"
         >
           Book a free 15-minute intro call
         </a>
-        <a href="/services" class="text-sm font-semibold text-ink underline decoration-ink/30 underline-offset-4 hover:decoration-ink">
+        <a href="/services/" class="text-sm font-semibold text-ink underline decoration-ink/30 underline-offset-4 hover:decoration-ink">
           See services
         </a>
       </div>
@@ -126,7 +126,7 @@ const principles = [
         the books and run payroll. Both halves inform the other.
       </p>
       <div class="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm">
-        <a href="/about" class="font-medium text-signal underline hover:text-signal-dark">More about us</a>
+        <a href="/about/" class="font-medium text-signal underline hover:text-signal-dark">More about us</a>
         {linkedIn && (
           <a href={linkedIn.url} rel="me noopener" target="_blank" class="font-medium text-signal underline hover:text-signal-dark">LinkedIn</a>
         )}
@@ -141,7 +141,7 @@ const principles = [
       Book a free 15-minute intro call. We'll tell you plainly whether we're a fit.
     </p>
     <a
-      href="/contact"
+      href="/contact/"
       class="mt-6 inline-block rounded-md bg-signal px-6 py-3 text-sm font-semibold text-white transition hover:bg-signal-dark"
     >
       Book a call

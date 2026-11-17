@@ -17,7 +17,7 @@ const { slug } = Astro.params;
 const post = await getPost(slug as string);
 
 if (!post) {
-  return Astro.redirect('/blog');
+  return Astro.redirect('/blog/');
 }
 
 function formatDate(iso?: string) {
@@ -42,8 +42,8 @@ const bodyHtml = post.body?.length
   : '';
 ---
 
-<BaseLayout title={post.title} description={post.summary}>
-  <a href="/blog" class="font-mono text-xs font-medium uppercase tracking-widest text-smoke hover:text-ink">&larr; Blog</a>
+<BaseLayout title={post.title} description={post.summary} ogType="article" noindex>
+  <a href="/blog/" class="font-mono text-xs font-medium uppercase tracking-widest text-smoke hover:text-ink">&larr; Blog</a>
 
   <p class="eyebrow mt-6">
     post {date ? `· ${date}` : ''}{post.author?.name ? ` · ${post.author.name}` : ''}

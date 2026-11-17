@@ -8,11 +8,11 @@ const { companyName = 'DeCorte Industries' } = Astro.props;
 // list in later redesign batches. "Book a call" is the primary action, so
 // it renders as a button rather than a plain nav link.
 const navItems = [
-  { label: 'Services', href: '/services' },
-  { label: 'About', href: '/about' },
-  { label: 'Blog', href: '/blog' },
+  { label: 'Services', href: '/services/' },
+  { label: 'About', href: '/about/' },
+  { label: 'Blog', href: '/blog/' },
 ];
-const bookCall = { label: 'Book a call', href: '/contact' };
+const bookCall = { label: 'Book a call', href: '/contact/' };
 
 const currentPath = Astro.url.pathname;
 ---
