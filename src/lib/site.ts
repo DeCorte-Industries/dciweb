@@ -19,6 +19,31 @@ export const fallbackContactEmail = 'info@decorteindustries.com';
 export const bookkeepingDisclaimer =
   'DeCorte Industries provides bookkeeping and financial-records support, not tax, legal, audit, or CPA services. Clients should consult a licensed professional for those.';
 
+// Default share image (1200x630), used for Open Graph and Twitter cards.
+export const defaultOgImage = {
+  src: '/og-image.png',
+  width: 1200,
+  height: 630,
+  alt: 'DeCorte Industries: data and cloud engineering for teams, fixed-price AI cleanup for small businesses.',
+};
+
+// Organization structured data for search engines. sameAs lists only the
+// company's own GitHub organization: a LinkedIn profile is not added
+// without Jason's ok (SEO review, 2026-11-17).
+export function organizationJsonLd(siteUrl: URL) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'DeCorte Industries',
+    url: new URL('/', siteUrl).href,
+    logo: new URL('/logo.png', siteUrl).href,
+    description:
+      'Data and cloud engineering for teams. Bookkeeping data cleanup, automation, and websites for small businesses.',
+    areaServed: 'US',
+    sameAs: ['https://github.com/DeCorte-Industries'],
+  };
+}
+
 export interface SiteConfig {
   companyName: string;
   contactEmail: string;
