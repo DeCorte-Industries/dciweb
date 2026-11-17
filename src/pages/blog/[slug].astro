@@ -1,0 +1,126 @@
+---
+import { toHTML } from '@portabletext/to-html';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPosts, getPost, urlFor } from '../../lib/sanity';
+
+export async function getStaticPaths() {
+  let posts: Awaited<ReturnType<typeof getPosts>> = [];
+  try {
+    posts = await getPosts();
+  } catch {
+    // Sanity not configured yet.
+  }
+  return posts.map((post) => ({ params: { slug: post.slug.current } }));
+}
+
+const { slug } = Astro.params;
+const post = await getPost(slug as string);
+
+if (!post) {
+  return Astro.redirect('/blog');
+}
+
+function formatDate(iso?: string) {
+  if (!iso) return null;
+  return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+const date = formatDate(post.publishedAt);
+const coverUrl = post.coverImage ? urlFor(post.coverImage)?.width(1200).height(630).url() : null;
+
+const bodyHtml = post.body?.length
+  ? toHTML(post.body, {
+      components: {
+        types: {
+          image: ({ value }) => {
+            const src = urlFor(value)?.width(900).url();
+            return src ? `<img src="${src}" alt="" loading="lazy" />` : '';
+          },
+        },
+      },
+    })
+  : '';
+---
+
+<BaseLayout title={post.title} description={post.summary}>
+  <a href="/blog" class="font-mono text-xs font-medium uppercase tracking-widest text-smoke hover:text-ink">&larr; Blog</a>
+
+  <p class="eyebrow mt-6">
+    post {date ? `· ${date}` : ''}{post.author?.name ? ` · ${post.author.name}` : ''}
+  </p>
+  <h1 class="mt-3 font-display text-3xl font-semibold text-ink sm:text-4xl">{post.title}</h1>
+  <p class="mt-4 max-w-2xl text-lg text-smoke">{post.summary}</p>
+
+  {post.tags && post.tags.length > 0 && (
+    <div class="mt-4 flex flex-wrap gap-2">
+      {post.tags.map((tag: string) => (
+        <span class="rounded-full bg-signal-light px-2.5 py-0.5 font-mono text-xs text-signal-dark">{tag}</span>
+      ))}
+    </div>
+  )}
+
+  {coverUrl && <img src={coverUrl} alt="" class="mt-8 w-full rounded-md object-cover" />}
+
+  {bodyHtml ? (
+    <div class="post-body mt-8 max-w-2xl" set:html={bodyHtml} />
+  ) : (
+    <p class="mt-8 max-w-2xl text-smoke">This post is still being written — check back soon.</p>
+  )}
+</BaseLayout>
+
+<style>
+  .post-body :global(h2) {
+    font-family: theme('fontFamily.display');
+    font-weight: 600;
+    font-size: 1.375rem;
+    color: theme('colors.ink');
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+  }
+  .post-body :global(h3) {
+    font-family: theme('fontFamily.display');
+    font-weight: 600;
+    font-size: 1.125rem;
+    color: theme('colors.ink');
+    margin-top: 1.75rem;
+    margin-bottom: 0.5rem;
+  }
+  .post-body :global(p) {
+    color: theme('colors.smoke');
+    line-height: 1.75;
+    margin-top: 1rem;
+  }
+  .post-body :global(a) {
+    color: theme('colors.signal.DEFAULT');
+    text-decoration: underline;
+  }
+  .post-body :global(a:hover) {
+    color: theme('colors.signal.dark');
+  }
+  .post-body :global(ul),
+  .post-body :global(ol) {
+    color: theme('colors.smoke');
+    margin-top: 1rem;
+    padding-left: 1.25rem;
+  }
+  .post-body :global(ul) {
+    list-style-type: disc;
+  }
+  .post-body :global(ol) {
+    list-style-type: decimal;
+  }
+  .post-body :global(li) {
+    margin-top: 0.375rem;
+  }
+  .post-body :global(blockquote) {
+    border-left: 2px solid theme('colors.ink / 15%');
+    padding-left: 1rem;
+    color: theme('colors.smoke');
+    font-style: italic;
+    margin-top: 1rem;
+  }
+  .post-body :global(img) {
+    border-radius: 0.375rem;
+    margin-top: 1.5rem;
+  }
+</style>

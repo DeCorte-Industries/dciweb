@@ -1,55 +1,77 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ServiceIcon from '../components/ServiceIcon.astro';
 import PipelineDiagram from '../components/PipelineDiagram.astro';
-import { getSiteSettings, getServices } from '../lib/sanity';
-import { fallbackServices, tierTextClass } from '../lib/services';
+import { bookkeepingDisclaimer, getSiteConfig } from '../lib/site';
 
-let settings = null;
-let cmsServices: Awaited<ReturnType<typeof getServices>> = [];
-try {
-  settings = await getSiteSettings();
-  cmsServices = await getServices();
-} catch {
-  // Sanity project not configured yet — fall back to placeholder content.
-}
+const { location, socialLinks } = await getSiteConfig();
+const linkedIn = socialLinks.find((link) => link.label.toLowerCase().startsWith('linkedin'));
 
-const tagline =
-  settings?.tagline ??
-  "Cloud data platforms and Python engineering for teams that can't afford to get their data infrastructure wrong.";
+// The two doors get equal weight (Jason, 2026-11-10). Each lists what the
+// review groups under it; dedicated /engineering and /small-business pages
+// arrive in a later batch, so the doors point at what exists today.
+const doors = [
+  {
+    eyebrow: 'for engineering teams',
+    accent: { border: 'border-t-signal', text: 'text-signal' },
+    // INVENTED COPY: review
+    title: 'Data platforms and Python services you can hand off.',
+    items: ['Data engineering', 'Python backend', 'AWS cloud', 'Fractional data engineer'],
+    cta: { label: 'See engineering services', href: '/services' },
+  },
+  {
+    eyebrow: 'for small businesses',
+    accent: { border: 'border-t-gold', text: 'text-gold' },
+    // INVENTED COPY: review
+    title: 'Clean books, documented processes, and a site that just works.',
+    items: ['Books and payroll cleanup', 'AI automation and SOPs', 'Websites', 'SEO'],
+    cta: { label: 'Book a free 15-minute intro', href: '/contact' },
+  },
+];
 
-// Sanity-sourced services and our local fallback data are shaped
-// differently (the CMS type has no icon/color/id), so normalize both into
-// one renderable shape here rather than fighting the type checker.
-const rawServices = cmsServices.length ? cmsServices : fallbackServices;
-const displayServices = rawServices.map((s: any) => ({
-  title: s.title,
-  summary: s.summary,
-  icon: s.icon ?? 'database',
-  color: s.color ?? 'signal',
-  anchor: s.id ?? s.slug?.current ?? '',
-}));
+const principles = [
+  {
+    name: 'senior_only',
+    detail: 'You work directly with a senior engineer. No account-manager layer.',
+  },
+  {
+    name: 'built_to_hand_off',
+    detail: 'Documented from day one, so you are never stuck with us.',
+  },
+  {
+    // INVENTED COPY: review
+    name: 'remote_by_default',
+    detail: 'Remote across the US, with written updates instead of standing meetings.',
+  },
+];
 ---
 
-<BaseLayout title="Home" description="DeCorte Industries — cloud data platforms and Python engineering.">
+<BaseLayout
+  title="Home"
+  description="Data and cloud engineering for teams. Books and payroll cleanup, automation, and websites for small businesses."
+>
   <section class="grid items-center gap-12 py-8 lg:grid-cols-2 lg:py-16">
     <div>
-      <p class="eyebrow">decorte industries / data &amp; python engineering</p>
+      <p class="eyebrow">decorte industries / engineering &amp; small business</p>
       <h1 class="mt-4 font-display text-4xl font-semibold leading-tight tracking-tight text-ink sm:text-5xl">
-        Data infrastructure your team can actually trust.
+        Data and cloud engineering for teams. Fixed-price AI cleanup for small businesses.
       </h1>
-      <p class="mt-5 max-w-lg text-lg text-smoke">{tagline}</p>
+      <p class="mt-5 max-w-lg text-lg text-smoke">
+        We build data platforms and Python services on AWS, and we bring 25+ years of running small-business
+        operations, including bookkeeping and payroll. Remote, senior, and documented so you're never stuck.
+      </p>
+      <p class="mt-3 max-w-lg text-xs leading-relaxed text-smoke/80">{bookkeepingDisclaimer}</p>
       <div class="mt-8 flex flex-wrap items-center gap-4">
         <a
           href="/contact"
           class="inline-block rounded-md bg-signal px-6 py-3 text-sm font-semibold text-white transition hover:bg-signal-dark"
         >
-          Get in touch
+          Book a free 15-minute intro call
         </a>
         <a href="/services" class="text-sm font-semibold text-ink underline decoration-ink/30 underline-offset-4 hover:decoration-ink">
-          View services
+          See services
         </a>
       </div>
+      <p class="mt-6 font-mono text-xs text-smoke">{location}</p>
     </div>
 
     <div class="flex flex-col items-center gap-3 lg:items-end">
@@ -58,22 +80,71 @@ const displayServices = rawServices.map((s: any) => ({
     </div>
   </section>
 
-  <section class="mt-4 grid gap-5 sm:grid-cols-2">
-    {displayServices.map((service) => (
-      <a
-        href={service.anchor ? `/services#${service.anchor}` : '/services'}
-        class="group rounded-md border border-ink/10 bg-white p-6 transition hover:border-ink/25 hover:shadow-sm"
-      >
-        <div class={`inline-flex h-9 w-9 items-center justify-center rounded border border-ink/15 ${tierTextClass[service.color as keyof typeof tierTextClass] ?? 'text-signal'}`}>
-          <ServiceIcon name={service.icon} />
-        </div>
-        <h2 class="mt-4 font-display text-lg font-semibold text-ink">{service.title}</h2>
-        <p class="mt-2 text-sm text-smoke">{service.summary}</p>
-        <span class="mt-4 inline-flex items-center gap-1 font-mono text-xs font-medium uppercase tracking-widest text-ink">
-          Learn more
+  <section class="mt-4 grid gap-5 sm:grid-cols-2" aria-label="Who we work with">
+    {doors.map((door) => (
+      <div class={`flex flex-col rounded-md border border-ink/10 border-t-4 bg-white p-6 ${door.accent.border}`}>
+        <p class={`font-mono text-xs font-medium uppercase tracking-widest ${door.accent.text}`}>{door.eyebrow}</p>
+        <h2 class="mt-3 font-display text-xl font-semibold text-ink">{door.title}</h2>
+        <ul class="mt-4 flex-1 space-y-1.5 text-sm text-smoke">
+          {door.items.map((item) => (
+            <li class="flex items-center gap-2">
+              <span class="h-1.5 w-1.5 rounded-full bg-silver" aria-hidden="true"></span>
+              {item}
+            </li>
+          ))}
+        </ul>
+        <a
+          href={door.cta.href}
+          class={`group mt-6 inline-flex items-center gap-1 font-mono text-xs font-medium uppercase tracking-widest ${door.accent.text}`}
+        >
+          {door.cta.label}
           <span aria-hidden="true" class="transition group-hover:translate-x-0.5">&rarr;</span>
-        </span>
-      </a>
+        </a>
+      </div>
     ))}
+  </section>
+
+  <section class="mt-16 grid gap-10 lg:grid-cols-2">
+    <div>
+      <p class="eyebrow">how we work</p>
+      <ul class="mt-4 divide-y divide-ink/5 overflow-hidden rounded-md border border-ink/10 bg-white">
+        {principles.map((principle) => (
+          <li class="flex flex-col gap-1 px-6 py-4 sm:flex-row sm:gap-6">
+            <span class="w-44 shrink-0 font-mono text-xs uppercase tracking-wide text-ink">{principle.name}</span>
+            <span class="text-sm text-smoke">{principle.detail}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <div>
+      <p class="eyebrow">about</p>
+      <!-- INVENTED COPY: review (about teaser, three lines, no photo) -->
+      <p class="mt-4 text-smoke">
+        DeCorte Industries pairs senior data and Python engineering with decades of hands-on small-business
+        operations. We've built pipelines that move hundreds of millions of records a year, and we've closed
+        the books and run payroll. Both halves inform the other.
+      </p>
+      <div class="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+        <a href="/about" class="font-medium text-signal underline hover:text-signal-dark">More about us</a>
+        {linkedIn && (
+          <a href={linkedIn.url} rel="me noopener" target="_blank" class="font-medium text-signal underline hover:text-signal-dark">LinkedIn</a>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-16 rounded-md bg-ink px-6 py-10 text-center text-paper sm:px-12">
+    <!-- INVENTED COPY: review (closing CTA heading and line) -->
+    <h2 class="font-display text-2xl font-semibold">Not sure which door is yours?</h2>
+    <p class="mx-auto mt-3 max-w-xl text-paper/70">
+      Book a free 15-minute intro call. We'll tell you plainly whether we're a fit.
+    </p>
+    <a
+      href="/contact"
+      class="mt-6 inline-block rounded-md bg-signal px-6 py-3 text-sm font-semibold text-white transition hover:bg-signal-dark"
+    >
+      Book a call
+    </a>
   </section>
 </BaseLayout>

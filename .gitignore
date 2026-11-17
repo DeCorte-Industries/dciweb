@@ -23,3 +23,7 @@ sanity/dist/
 .wrangler/
 .dev.vars
 worker-configuration.d.ts
+
+# generated
+graphify-out/
+sanity/.sanity/

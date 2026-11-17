@@ -1,0 +1,83 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getSiteConfig } from '../lib/site';
+
+const { contactEmail } = await getSiteConfig();
+const lastUpdated = 'November 12, 2026';
+---
+
+<BaseLayout title="Privacy" description="How DeCorte Industries handles information collected through this website.">
+  <!-- INVENTED COPY: review. Generic privacy notice written for the redesign preview; no source text existed. -->
+  <p class="eyebrow">privacy</p>
+  <h1 class="mt-3 font-display text-3xl font-semibold text-ink sm:text-4xl">Privacy notice</h1>
+  <p class="mt-3 font-mono text-xs text-smoke">Last updated {lastUpdated}</p>
+
+  <div class="mt-8 max-w-2xl space-y-8 text-smoke">
+    <section>
+      <h2 class="font-display text-xl font-semibold text-ink">What this covers</h2>
+      <p class="mt-3">
+        This notice explains what information DeCorte Industries collects when you visit this website,
+        book a call, or email us, and how we use it. It doesn't cover the services we deliver under a
+        client agreement; those terms are set in the agreement itself.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="font-display text-xl font-semibold text-ink">What we collect</h2>
+      <ul class="mt-3 list-disc space-y-2 pl-5">
+        <li>
+          <span class="text-ink">When you book a call:</span> the name, email address, and any notes you
+          enter in the booking form. Booking is handled by Cal.com, which processes that information under
+          its own privacy policy.
+        </li>
+        <li>
+          <span class="text-ink">When you email us:</span> your email address and whatever you choose to
+          include in the message.
+        </li>
+        <li>
+          <span class="text-ink">When you browse:</span> standard request data such as IP address, browser
+          type, and pages requested, recorded by our hosting provider (Cloudflare) for security and
+          reliability. Fonts are loaded from Google Fonts, which receives your IP address when it serves them.
+        </li>
+      </ul>
+      <p class="mt-3">
+        We don't use advertising trackers, we don't run third-party analytics, and this site doesn't set
+        its own cookies. The booking widget may set cookies needed for it to work.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="font-display text-xl font-semibold text-ink">How we use it</h2>
+      <p class="mt-3">
+        We use what you send us to reply to you, schedule and hold the call you booked, and talk about
+        possible work together. We don't sell your information or share it with anyone for their own
+        marketing.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="font-display text-xl font-semibold text-ink">How long we keep it</h2>
+      <p class="mt-3">
+        We keep booking details and email for as long as we need them to follow up and keep normal
+        business records, then delete them. You can ask us to delete them sooner.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="font-display text-xl font-semibold text-ink">Your choices</h2>
+      <p class="mt-3">
+        You can ask what information we hold about you, ask us to correct or delete it, or ask us to stop
+        contacting you. Email
+        <a class="font-medium text-signal underline hover:text-signal-dark" href={`mailto:${contactEmail}`}>{contactEmail}</a>
+        and we'll take care of it.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="font-display text-xl font-semibold text-ink">Changes</h2>
+      <p class="mt-3">
+        If this notice changes, we'll update it here and change the date at the top.
+      </p>
+    </section>
+  </div>
+</BaseLayout>
