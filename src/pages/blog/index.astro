@@ -33,7 +33,7 @@ function formatDate(iso?: string) {
       const date = formatDate(post.publishedAt);
       const coverUrl = post.coverImage ? urlFor(post.coverImage)?.width(160).height(160).url() : null;
       return (
-        <a href={`/blog/${post.slug.current}`} class="group block rounded-md border border-ink/10 bg-white transition hover:border-signal hover:shadow-sm">
+        <a href={`/blog/${post.slug.current}/`} class="group block rounded-md border border-ink/10 bg-white transition hover:border-signal hover:shadow-sm">
           <div class="flex items-center gap-3 border-b border-ink/10 px-6 py-3 sm:px-8">
             <span class="font-mono text-xs uppercase tracking-widest text-smoke">
               post {date ? `· ${date}` : ''}
