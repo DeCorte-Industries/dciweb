@@ -1,6 +1,8 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ServiceIcon from '../../components/ServiceIcon.astro';
+import CaseStudyCard from '../../components/CaseStudyCard.astro';
+import { caseStudiesBySlug } from '../../lib/caseStudies';
 import { audienceLabels, loadServices, tierBgClass, tierTextClass, type ServiceItem } from '../../lib/services';
 import { bookkeepingDisclaimer } from '../../lib/site';
 
@@ -14,6 +16,7 @@ interface Props {
 }
 const { service } = Astro.props;
 const audience = audienceLabels[service.audience];
+const proof = caseStudiesBySlug(service.caseStudies);
 ---
 
 <BaseLayout title={service.title} description={service.summary}>
@@ -78,6 +81,15 @@ const audience = audienceLabels[service.audience];
           </li>
         ))}
       </ol>
+    </section>
+  )}
+
+  {proof.length > 0 && (
+    <section class="mt-12" aria-labelledby="proof-heading">
+      <p class="eyebrow" id="proof-heading">proof</p>
+      <div class="mt-4 grid gap-5 sm:grid-cols-2">
+        {proof.map((study) => <CaseStudyCard study={study} />)}
+      </div>
     </section>
   )}
 

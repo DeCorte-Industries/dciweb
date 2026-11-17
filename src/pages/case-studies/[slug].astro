@@ -1,0 +1,79 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { caseStudies, type CaseStudy } from '../../lib/caseStudies';
+import { loadServices } from '../../lib/services';
+
+export function getStaticPaths() {
+  return caseStudies.map((study) => ({ params: { slug: study.slug }, props: { study } }));
+}
+
+interface Props {
+  study: CaseStudy;
+}
+const { study } = Astro.props;
+const services = (await loadServices()).filter((service) => study.services.includes(service.id));
+---
+
+<BaseLayout title={`${study.title} case study`} description={study.summary} ogType="article">
+  <a href="/services/" class="font-mono text-xs font-medium uppercase tracking-widest text-smoke hover:text-ink">&larr; Services</a>
+
+  <p class="eyebrow mt-6">case study</p>
+  <h1 class="mt-3 font-display text-3xl font-semibold text-ink sm:text-4xl">{study.title}</h1>
+  <p class="mt-3 font-mono text-xs text-smoke">{study.client}</p>
+  <p class="mt-5 max-w-2xl text-lg text-smoke">{study.summary}</p>
+
+  <div class="mt-10 grid gap-10 lg:grid-cols-3">
+    <div class="space-y-10 lg:col-span-2">
+      <section aria-labelledby="problem-heading">
+        <h2 id="problem-heading" class="eyebrow">the problem</h2>
+        <p class="mt-3 text-ink">{study.problem}</p>
+      </section>
+
+      <section aria-labelledby="work-heading">
+        <h2 id="work-heading" class="eyebrow">what we built</h2>
+        <ul class="mt-3 divide-y divide-ink/5 rounded-md border border-ink/10 bg-white">
+          {study.work.map((item) => (
+            <li class="flex items-start gap-3 px-6 py-3 text-sm text-smoke">
+              <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-signal" aria-hidden="true"></span>
+              {item}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section aria-labelledby="result-heading">
+        <h2 id="result-heading" class="eyebrow">the result</h2>
+        <p class="mt-3 text-ink">{study.result}</p>
+      </section>
+    </div>
+
+    <aside class="space-y-8">
+      <section aria-labelledby="stack-heading">
+        <h2 id="stack-heading" class="eyebrow">stack</h2>
+        <ul class="mt-3 flex flex-wrap gap-2">
+          {study.stack.map((tool) => (
+            <li class="rounded-full bg-signal-light px-2.5 py-0.5 font-mono text-xs text-signal-dark">{tool}</li>
+          ))}
+        </ul>
+      </section>
+      {services.length > 0 && (
+        <section aria-labelledby="services-heading">
+          <h2 id="services-heading" class="eyebrow">related services</h2>
+          <ul class="mt-3 space-y-2 text-sm">
+            {services.map((service) => (
+              <li><a href={`/services/${service.id}/`} class="font-medium text-signal underline hover:text-signal-dark">{service.title}</a></li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </aside>
+  </div>
+
+  <section class="mt-16 rounded-md bg-ink px-6 py-10 text-center text-paper sm:px-12">
+    <h2 class="font-display text-2xl font-semibold">Have something similar?</h2>
+    <p class="mx-auto mt-3 max-w-xl text-paper/70">A free 15-minute intro call. We'll tell you plainly whether we're a fit.</p>
+    <a href="/contact" class="mt-6 inline-block rounded-md bg-signal px-6 py-3 text-sm font-semibold text-white transition hover:bg-signal-dark">
+      Book a free 15-minute intro call
+    </a>
+  </section>
+</BaseLayout>

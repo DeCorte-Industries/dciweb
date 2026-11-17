@@ -1,6 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ServiceIcon from '../components/ServiceIcon.astro';
+import CaseStudyCard from '../components/CaseStudyCard.astro';
+import { caseStudies } from '../lib/caseStudies';
 import { audienceLabels, loadServices, servicesFor, tierBgClass, tierTextClass, type ServiceAudience } from '../lib/services';
 
 const services = await loadServices();
@@ -70,6 +72,14 @@ const sections: { id: ServiceAudience; intro: string }[] = [
       </div>
     </section>
   ))}
+
+  <section id="case-studies" class="mt-14 scroll-mt-24" aria-labelledby="case-studies-heading">
+    <p class="eyebrow">proof</p>
+    <h2 id="case-studies-heading" class="mt-2 font-display text-2xl font-semibold text-ink">Case studies</h2>
+    <div class="mt-6 grid gap-5 sm:grid-cols-2">
+      {caseStudies.map((study) => <CaseStudyCard study={study} />)}
+    </div>
+  </section>
 
   <p class="mt-14 text-smoke">
     Not sure which of these fits your situation? <a href="/contact" class="font-medium text-signal underline hover:text-signal-dark">Book a free 15-minute intro call</a> and we'll help you figure it out.
