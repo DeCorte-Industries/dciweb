@@ -1,27 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ServiceIcon from '../components/ServiceIcon.astro';
-import { getServices } from '../lib/sanity';
-import { fallbackServices, tierTextClass, tierBgClass } from '../lib/services';
+import { loadServices, tierTextClass, tierBgClass } from '../lib/services';
 
-let cmsServices: Awaited<ReturnType<typeof getServices>> = [];
-try {
-  cmsServices = await getServices();
-} catch {
-  // Sanity not configured yet.
-}
-
-// Sanity documents use `slug.current` instead of the fallback data's `id`,
-// and older/incomplete documents may be missing `detail` if a service was
-// only partly filled out in the Studio — normalize both here.
-const rawServices = cmsServices.length ? cmsServices : fallbackServices;
-const displayServices = rawServices.map((s: any) => ({
-  id: s.id ?? s.slug?.current ?? '',
-  title: s.title,
-  icon: s.icon ?? 'database',
-  color: s.color ?? 'signal',
-  detail: s.detail ?? { intro: s.summary, bullets: [], idealFor: '' },
-}));
+const displayServices = await loadServices();
 ---
 
 <BaseLayout title="Services" description="Services offered by DeCorte Industries.">

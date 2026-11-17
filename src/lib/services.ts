@@ -1,3 +1,5 @@
+import { getServices } from './sanity';
+
 export type ServiceIconName = 'database' | 'code' | 'server' | 'percent';
 
 // The four service accents are the same tier colors used in the hero's
@@ -124,3 +126,23 @@ export const fallbackServices: ServiceItem[] = [
     color: 'bronze',
   },
 ];
+
+// Sanity documents use `slug.current` instead of the fallback data's `id`,
+// and older/incomplete documents may be missing `detail` if a service was
+// only partly filled out in the Studio — normalize both here.
+export async function loadServices() {
+  let cmsServices: Awaited<ReturnType<typeof getServices>> = [];
+  try {
+    cmsServices = await getServices();
+  } catch {
+    // Sanity not configured yet.
+  }
+  const rawServices = cmsServices.length ? cmsServices : fallbackServices;
+  return rawServices.map((s: any) => ({
+    id: s.id ?? s.slug?.current ?? '',
+    title: s.title,
+    icon: s.icon ?? 'database',
+    color: s.color ?? 'signal',
+    detail: s.detail ?? { intro: s.summary, bullets: [], idealFor: '' },
+  }));
+}
